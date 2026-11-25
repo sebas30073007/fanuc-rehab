@@ -4,6 +4,8 @@ Rehabilitación de un robot industrial FANUC de 6 ejes (Robot #2, Formet), en co
 
 **Gemelo digital:** https://sebas30073007.github.io/fanuc-rehab/
 
+[![Gemelo digital del FANUC Robot #2](docs/captura-gemelo.png)](https://sebas30073007.github.io/fanuc-rehab/)
+
 ## El robot
 
 - Probablemente un **FANUC ARC Mate 100i (≈ M-6i)**. Falta confirmarlo con la placa del robot.
