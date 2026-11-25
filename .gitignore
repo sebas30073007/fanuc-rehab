@@ -1,0 +1,9 @@
+# Fotos del robot: no se publican sin permiso del dueño
+referencia/fotos-huber/
+
+# Manuales de FANUC: tienen derechos de autor; los enlaces están en referencia/specs/enlaces.md
+referencia/specs/pdf/
+
+node_modules/
+.DS_Store
+Thumbs.db

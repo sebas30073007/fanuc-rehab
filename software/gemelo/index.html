@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>FANUC ARC Mate 100i · gemelo digital</title>
+<meta name="description" content="Gemelo digital del FANUC ARC Mate 100i (Robot #2): 6 ejes, cinemática directa e inversa en convención FANUC, rutinas de demostración y simulador en el navegador.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/app.css">
+<script type="importmap">
+{ "imports": {
+  "three": "./vendor/three/three.module.min.js",
+  "three/addons/": "./vendor/three/addons/"
+} }
+</script>
+</head>
+<body>
+<!-- Un set de íconos: trazo 1.8, caja 24, lineal. Los rellenos solo marcan la pestaña elegida. -->
+<svg hidden aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="i-brazo" viewBox="0 0 24 24"><path d="M5 20h8M9 20v-4"/><circle cx="9" cy="14" r="2"/><path d="m10.4 12.6 4.2-5.2"/><circle cx="15.6" cy="6" r="1.8"/><path d="M17.2 6.8 20 9M17 4.6l2-1.6"/></symbol>
+  <symbol id="i-brazo-on" viewBox="0 0 24 24"><path d="M5 20h8M9 20v-4"/><circle cx="9" cy="14" r="2.4" fill="currentColor"/><path d="m10.4 12.6 4.2-5.2"/><circle cx="15.6" cy="6" r="2.2" fill="currentColor"/><path d="M17.2 6.8 20 9M17 4.6l2-1.6"/></symbol>
+  <symbol id="i-rutinas" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M10 8.8v6.4l5-3.2z"/></symbol>
+  <symbol id="i-rutinas-on" viewBox="0 0 24 24"><path d="M8 4h8a4 4 0 0 1 4 4v8a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4V8a4 4 0 0 1 4-4zm2 4.8v6.4l5-3.2z" fill="currentColor" fill-rule="evenodd" stroke="none"/></symbol>
+  <symbol id="i-ficha" viewBox="0 0 24 24"><rect x="4" y="3.5" width="16" height="17" rx="3.5"/><path d="M8 8.5h8M8 12h8M8 15.5h5"/></symbol>
+  <symbol id="i-ficha-on" viewBox="0 0 24 24"><path d="M7.5 3.5h9A3.5 3.5 0 0 1 20 7v10a3.5 3.5 0 0 1-3.5 3.5h-9A3.5 3.5 0 0 1 4 17V7a3.5 3.5 0 0 1 3.5-3.5zM8 7.75a.75.75 0 0 0 0 1.5h8a.75.75 0 0 0 0-1.5zm0 3.5a.75.75 0 0 0 0 1.5h8a.75.75 0 0 0 0-1.5zm0 3.5a.75.75 0 0 0 0 1.5h5a.75.75 0 0 0 0-1.5z" fill="currentColor" stroke="none"/></symbol>
+  <symbol id="i-ajustes" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+  <symbol id="i-agrandar" viewBox="0 0 24 24"><path d="M14 4h6v6M20 4l-6 6M10 20H4v-6M4 20l6-6"/></symbol>
+  <symbol id="i-achicar" viewBox="0 0 24 24"><path d="M20 10h-6V4M14 10l6-6M4 14h6v6M10 14l-6 6"/></symbol>
+  <symbol id="i-encuadrar" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/><circle cx="12" cy="12" r="2.5"/></symbol>
+  <symbol id="i-sim" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="12" rx="2.5"/><path d="M8 20h8M12 16v4"/></symbol>
+  <symbol id="i-cable" viewBox="0 0 24 24"><path d="M7 3v4M11 3v4M5 7h8v4a4 4 0 0 1-8 0zM9 15v2a4 4 0 0 0 4 4h2a4 4 0 0 0 4-4V9"/></symbol>
+  <symbol id="i-mira" viewBox="0 0 24 24"><circle cx="12" cy="12" r="6.5"/><path d="M12 2.5v5M12 16.5v5M2.5 12h5M16.5 12h5"/></symbol>
+  <symbol id="i-casa" viewBox="0 0 24 24"><path d="M4 11 12 4l8 7M6 9.5V20h12V9.5"/></symbol>
+  <symbol id="i-mano" viewBox="0 0 24 24"><path d="M8 13V6.5a1.5 1.5 0 0 1 3 0V12M11 11V5a1.5 1.5 0 0 1 3 0v6M14 11V6.5a1.5 1.5 0 0 1 3 0V14a7 7 0 0 1-7 7h-.5a6 6 0 0 1-5-2.7L3 15.5a1.5 1.5 0 0 1 2.4-1.8L8 16"/></symbol>
+  <symbol id="i-pasos" viewBox="0 0 24 24"><circle cx="5.5" cy="17" r="2"/><circle cx="12" cy="8" r="2"/><circle cx="18.5" cy="15" r="2"/><path d="m6.7 15.4 4.1-5.8M13.4 9.5l3.8 4"/></symbol>
+  <symbol id="i-linea" viewBox="0 0 24 24"><circle cx="5" cy="17" r="2"/><circle cx="19" cy="17" r="2"/><path d="M7 17h10M12 4v8M9 9l3 3 3-3"/></symbol>
+  <symbol id="i-cuadro" viewBox="0 0 24 24"><rect x="5" y="5" width="14" height="14" rx="1.5" stroke-dasharray="3 2.2"/><circle cx="5" cy="5" r="1.6" fill="currentColor"/></symbol>
+  <symbol id="i-muneca" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5a8.5 8.5 0 0 1 8.5 8.5M12 20.5A8.5 8.5 0 0 1 3.5 12M18.5 9.5l2 2.5 2-2.5M5.5 14.5l-2-2.5-2 2.5"/></symbol>
+</svg>
+
+<div class="app">
+
+  <!-- ================= Barra: robot, modo y ALTO ================= -->
+  <header class="barra">
+    <h1 class="barra__app" id="nombreRobot">FANUC ARC Mate 100i</h1>
+    <span class="barra__sub">Robot #2 · 6 ejes</span>
+    <div class="seg seg--modo" id="segModo" role="radiogroup" aria-label="Robot">
+      <button class="on" data-modo="digital" role="radio" aria-checked="true" aria-label="Digital" title="Controlador simulado en el navegador">
+        <svg class="ico" aria-hidden="true"><use href="#i-sim"/></svg><span>Digital</span>
+      </button>
+      <button data-modo="real" role="radio" aria-checked="false" aria-label="Real" title="Enlace con el controlador: pendiente, aún no hay hardware">
+        <svg class="ico" aria-hidden="true"><use href="#i-cable"/></svg><span>Real</span><i class="punto-con" aria-hidden="true"></i>
+      </button>
+    </div>
+    <button class="btn-alto" id="bAlto" title="Detener todo (Esc)" aria-keyshortcuts="Escape">ALTO</button>
+  </header>
+
+  <!-- ================= Visor + terminal ================= -->
+  <div class="centro">
+  <main class="visor" id="visor" aria-label="Gemelo 3D del robot">
+    <!-- TCP (centro de la brida) en WORLD de FANUC: se lee y se edita aquí -->
+    <div class="visor__coords" title="TCP = centro de la brida, en WORLD de FANUC · X al frente, Y a la izquierda, Z arriba; origen en J1 a la altura de J2">
+      <label class="pildora-dato"><b>X</b><input type="number" id="pX" step="1" data-i="0" aria-label="TCP X en mm"></label>
+      <label class="pildora-dato"><b>Y</b><input type="number" id="pY" step="1" data-i="1" aria-label="TCP Y en mm"></label>
+      <label class="pildora-dato"><b>Z</b><input type="number" id="pZ" step="1" data-i="2" aria-label="TCP Z en mm"></label>
+      <label class="pildora-dato pildora-dato--g"><b>W</b><input type="number" id="pW" step="1" data-i="3" aria-label="TCP W en grados"></label>
+      <label class="pildora-dato pildora-dato--g"><b>P</b><input type="number" id="pP" step="1" data-i="4" aria-label="TCP P en grados"></label>
+      <label class="pildora-dato pildora-dato--g"><b>R</b><input type="number" id="pR" step="1" data-i="5" aria-label="TCP R en grados"></label>
+      <span class="pildora-dato pildora-dato--cfg mono" id="cfgActual" title="Configuración: muñeca N/F · codo U/D · base T/B"></span>
+      <span class="pildora-dato pildora-dato--alcance alcance" id="alcance"></span>
+    </div>
+    <button class="btn-flota" id="bEncuadrar" title="Volver a la vista inicial" aria-label="Volver a la vista inicial"><svg class="ico" aria-hidden="true"><use href="#i-encuadrar"/></svg></button>
+    <button class="btn-flota btn-flota--tam" id="bVisorTam" aria-pressed="false" aria-label="Agrandar vista 3D" title="Agrandar vista 3D">
+      <svg class="ico i-agrandar" aria-hidden="true"><use href="#i-agrandar"/></svg><svg class="ico i-achicar" aria-hidden="true"><use href="#i-achicar"/></svg>
+    </button>
+
+    <div class="etiqueta-eje" id="etiquetaEje" hidden></div>
+    <div class="aviso" id="aviso" role="status" hidden></div>
+    <div class="visor-vacio" id="visorVacio" hidden><b>Modo Real pendiente · aún no hay enlace con el controlador</b></div>
+
+    <div class="raton" id="raton" aria-hidden="true">
+      <svg viewBox="0 0 40 60">
+        <path class="r-cuerpo" d="M4 26V42a16 16 0 0 0 32 0V26Z"/>
+        <path class="r-boton" data-b="1" d="M4 24V20A16 16 0 0 1 19 4.03V24Z"/>
+        <path class="r-boton" data-b="2" d="M36 24V20A16 16 0 0 0 21 4.03V24Z"/>
+        <rect class="r-boton" data-b="4" x="17.5" y="8" width="5" height="11" rx="2.5"/>
+      </svg>
+      <ul>
+        <li data-b="1"><i></i><span id="ratonIzq">Orbitar</span></li>
+        <li data-b="4"><i></i><span>Zoom · clic desplaza</span></li>
+        <li data-b="2"><i></i><span>Desplazar</span></li>
+      </ul>
+    </div>
+
+    <div class="seg seg--flota" id="segInteraccion" role="radiogroup" aria-label="Cómo mover">
+      <button class="on" data-i="articulaciones" role="radio" aria-checked="true" title="Arrastra cada pieza para girar su eje">Articulaciones</button>
+      <button data-i="punto" role="radio" aria-checked="false" title="Mueve el TCP y el brazo lo sigue (inversa)">Punto</button>
+    </div>
+    <div class="cargando" id="cargando">Cargando modelo…</div>
+  </main>
+
+  <!-- Terminal: lo que pasa por el enlace. Rojo = TX (la PC manda), verde = RX (responde el controlador). -->
+  <section class="terminal" id="terminal" aria-label="Terminal">
+    <header class="term-cab">
+      <button class="term-plegar" id="termPlegar" aria-expanded="true" aria-controls="consola" title="Plegar la terminal">
+        <svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg><span class="term-titulo">Terminal</span>
+      </button>
+      <span class="term-fuente" id="termFuente"></span>
+      <span class="term-leyenda"><i class="tx">TX</i><i class="rx">RX</i></span>
+      <div class="term-acciones">
+        <button class="term-btn" id="termSondeo" aria-pressed="false" title="JNT? que se pide solo, cada 0.5 s">Sondeo</button>
+        <button class="term-btn" id="termPausa" aria-pressed="false">Pausa</button>
+        <button class="term-btn" id="termLimpiar">Limpiar</button>
+      </div>
+    </header>
+    <div class="term-cuerpo sin-sondeo" id="consola" aria-live="off"></div>
+    <form class="term-linea" id="consolaForm">
+      <span aria-hidden="true">›</span>
+      <input id="consolaInput" autocomplete="off" spellcheck="false" placeholder="J 0 0 0 0 -90 0   ·   L 900 0 0 180 0 0   ·   ?" aria-label="Comando">
+    </form>
+  </section>
+  </div>
+
+  <!-- ================= Panel ================= -->
+  <aside class="panel" aria-label="Controles">
+    <div class="panel__vista" id="vista">
+
+      <!-- ---------- Mover ---------- -->
+      <section class="pag" data-pag="mover">
+        <header class="cab0">
+          <h2>Mover</h2>
+          <span class="chip" id="chipConexion" data-s="on"><span class="punto" aria-hidden="true"></span><span id="chipTexto">Simulación</span></span>
+        </header>
+
+        <!-- Solo en Real -->
+        <section class="w" id="puerto" hidden aria-labelledby="tPuerto">
+          <span class="w-cab"><span id="tPuerto">Conexión</span><span class="etq-pend">Pendiente</span></span>
+          <p class="w-nota">Aún no hay enlace con el controlador. El gemelo se queda en la última pose; para mover, vuelve a Digital.</p>
+        </section>
+
+        <section class="w" aria-labelledby="tEjes">
+          <span class="w-cab"><span id="tEjes">Articulaciones</span>
+            <span class="leyenda" aria-hidden="true"><i class="ley-ref"></i>Referencia<i class="ley-real"></i>Real</span></span>
+          <div id="ejes"></div>
+        </section>
+
+        <section class="w" aria-labelledby="tCart">
+          <span class="w-cab"><span id="tCart">Punto · WORLD</span>
+            <div class="seg seg--mono seg--chico" id="segPaso" role="radiogroup" aria-label="Paso del jog" title="Paso: mm en X Y Z, grados en W P R">
+              <button data-p="1">1</button><button class="on" data-p="10">10</button><button data-p="50">50</button>
+            </div>
+          </span>
+          <dl class="datos datos--tcp" id="tcpReal" title="TCP del robot real (o simulado), en vivo"></dl>
+          <div class="jog-cart" id="jogCart"></div>
+          <div class="cfg-filas">
+            <div class="fila-ajuste"><span>Muñeca</span>
+              <div class="seg seg--chico" id="cfgMuneca" role="radiogroup" aria-label="Muñeca">
+                <button class="on" data-v="N" title="No volteada (J5 ≤ 0)">N</button><button data-v="F" title="Volteada (J5 &gt; 0)">F</button>
+              </div></div>
+            <div class="fila-ajuste"><span>Codo</span>
+              <div class="seg seg--chico" id="cfgCodo" role="radiogroup" aria-label="Codo">
+                <button class="on" data-v="U" title="Arriba">U · arriba</button><button data-v="D" title="Abajo">D · abajo</button>
+              </div></div>
+            <div class="fila-ajuste"><span>Base</span>
+              <div class="seg seg--chico" id="cfgBase" role="radiogroup" aria-label="Base">
+                <button class="on" data-v="T" title="De frente">T · frente</button><button data-v="B" title="Por atrás">B · atrás</button>
+              </div></div>
+          </div>
+        </section>
+      </section>
+
+      <!-- ---------- Rutinas ---------- -->
+      <section class="pag" data-pag="rutinas" hidden>
+        <header class="cab0"><h2>Rutinas</h2></header>
+        <div class="acciones" id="rutinasBotones"></div>
+        <section class="w">
+          <span class="w-cab"><span>Override</span><b class="mono" id="ovrTexto">50 %</b></span>
+          <input type="range" class="rango" id="ovr" min="1" max="100" step="1" value="50" aria-label="Override de velocidad">
+        </section>
+      </section>
+
+      <!-- ---------- Ficha ---------- -->
+      <section class="pag" data-pag="ficha" hidden>
+        <header class="cab0"><h2>Ficha</h2></header>
+        <section class="w">
+          <span class="w-cab"><span>Robot</span><span class="etq-conf" id="confianza"></span></span>
+          <dl class="datos" id="datosRobot"></dl>
+        </section>
+        <section class="w">
+          <span class="w-cab"><span>Ejes y motores</span></span>
+          <div class="tabla-ejes" id="tablaEjes"></div>
+        </section>
+        <section class="w">
+          <span class="w-cab"><span>Eslabones</span><span class="w-sub">mm</span></span>
+          <dl class="datos" id="datosEslabones"></dl>
+        </section>
+        <details class="desp">
+          <summary><span>De dónde sale cada dato</span><svg class="ico" aria-hidden="true"><use href="#i-chev"/></svg></summary>
+          <div class="desp__cuerpo fuentes">
+            <p><b>Modelo.</b> Por la silueta en las fotos: brazo inferior curvo, motor de J3 en el codo, motores de muñeca atrás del antebrazo, motores α de 1996–2000. Falta leer la placa del robot.</p>
+            <p><b>Cinemática.</b> URDF <span class="mono">fanuc_m6ib_support</span> de ROS-Industrial (BSD): da 1373 mm de alcance; la hoja del ARC Mate 100i dice 1368 mm.</p>
+            <p><b>Límites y velocidades.</b> Hoja de datos del ARC Mate 100i (copia de distribuidor). Sin la zona de interferencia J2/J3.</p>
+            <p><b>Motores.</b> Placas de las fotos: αM6/3000 A06B-0162-B175 y α1/3000 A06B-0371-B175.</p>
+            <p><b>Volúmenes 3D.</b> Estimados a ojo sobre las fotos (± 2 cm). En Ajustes se puede ver la malla del M-6iB para comparar.</p>
+          </div>
+        </details>
+      </section>
+    </div>
+
+    <nav class="navinf" aria-label="Secciones">
+      <div class="navinf__pildora">
+        <button data-tab="mover" aria-current="page"><svg class="ico" aria-hidden="true"><use href="#i-brazo-on"/></svg><span>Mover</span></button>
+        <button data-tab="rutinas"><svg class="ico" aria-hidden="true"><use href="#i-rutinas"/></svg><span>Rutinas</span></button>
+        <button data-tab="ficha"><svg class="ico" aria-hidden="true"><use href="#i-ficha"/></svg><span>Ficha</span></button>
+      </div>
+      <button class="navinf__mas" id="bAjustes" aria-label="Ajustes" title="Ajustes"><svg class="ico" aria-hidden="true"><use href="#i-ajustes"/></svg></button>
+    </nav>
+
+    <!-- Ajustes: hoja que sube desde abajo, dentro del panel -->
+    <div class="hoja-capa" id="hojaAjustes" hidden>
+      <div class="hoja-velo" data-cerrar></div>
+      <section class="hoja" role="dialog" aria-modal="true" aria-labelledby="tAjustes">
+        <header class="hoja__cab">
+          <h2 id="tAjustes">Ajustes</h2>
+          <button class="btn-icono" data-cerrar aria-label="Cerrar"><svg class="ico" aria-hidden="true"><use href="#i-x"/></svg></button>
+        </header>
+        <div class="hoja__cuerpo ajustes">
+          <section class="w" id="ajustesSim">
+            <span class="w-cab"><span>Simulador</span></span>
+            <div class="fila-ajuste">
+              <span>Tiempo</span>
+              <div class="seg seg--mono" id="segTiempo" role="radiogroup" aria-label="Tiempo">
+                <button class="on" data-x="1">×1</button><button data-x="2">×2</button><button data-x="5">×5</button>
+              </div>
+            </div>
+          </section>
+          <section class="w">
+            <span class="w-cab"><span>Modelo 3D</span></span>
+            <div class="fila-ajuste">
+              <span>Piezas</span>
+              <div class="seg" id="segModelo" role="radiogroup" aria-label="Modelo 3D">
+                <button class="on" data-m="rojo" title="Reconstruido con las fotos de Huber">Robot #2</button>
+                <button data-m="m6ib" title="Mallas del URDF de ROS-Industrial (BSD), misma cinemática">M-6iB · ROS-I</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </div>
+  </aside>
+</div>
+
+<!-- Riel de articulación (igual que Pólux): pista, barra de HOME al real,
+     casita en HOME, punto azul = real, pulgar blanco = referencia -->
+<template id="tplEje">
+  <div class="eje">
+    <div class="eje-cab">
+      <span class="eje-nombre"></span>
+      <span class="eje-valores mono">
+        <b class="v-ref"><input type="number" class="eje-num" step="0.1" aria-label="Referencia en grados"></b>
+        <i class="v-real"></i>
+      </span>
+    </div>
+    <div class="eje-control">
+      <button class="jog" data-vis="-1" aria-label="Mover a la izquierda">‹</button>
+      <div class="sl" tabindex="0" role="slider">
+        <div class="sl-pista"></div>
+        <div class="sl-barra"></div>
+        <div class="sl-casa"><svg viewBox="0 0 12 12"><path d="M1.5 6L6 2l4.5 4M3 5v5h6V5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg></div>
+        <div class="sl-real"></div>
+        <div class="sl-ref"></div>
+      </div>
+      <button class="jog" data-vis="1" aria-label="Mover a la derecha">›</button>
+    </div>
+  </div>
+</template>
+
+<script type="module" src="js/main.js"></script>
+</body>
+</html>
